@@ -1,0 +1,38 @@
+* {
+   margin: 0;
+   padding: 0;
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+label, input {
+   margin: 4px;
+   padding: 4px;
+}
+#line {
+   position: absolute;
+   display: none;
+   top: 750px;
+   left: 120px;
+   width: 1100px;
+   height: 4px;
+   background: url(adespc-tdms-merignac-line.png) center repeat-x;
+}
+#left-mask {
+   position: absolute;
+   display: none;
+   top: 112px;
+   height: 684px;
+   left: 118px;
+   width: 90px;
+   background-color: beige;
+   opacity: 0.5;
+}
+#right-mask {
+   position: absolute;
+   display: none;
+   top: 112px;
+   height: 684px;
+   left: 118px;
+   width: 90px;
+   background-color: beige;
+   opacity: 0.5;
+}
