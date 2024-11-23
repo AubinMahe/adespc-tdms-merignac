@@ -5,18 +5,17 @@ function adespc_tdms_merignac() {
    this.line_ui       = document.getElementById("line");
    this.left_mask_ui  = document.getElementById("left-mask");
    this.right_mask_ui = document.getElementById("right-mask");
-   const area         = document.getElementById("graph").getBoundingClientRect();
-   this.line_2000     = area.bottom - 118.0;
-   this.line_scale    = ( area.height - 170.0 ) / ( 14_000.0 - 2_000.0 );
-   this.add_event_handlers();
-}
-
-adespc_tdms_merignac.prototype.add_event_handlers = function() {
-   this.salary_ui  .addEventListener( 'input' , e => this.onSalaryChange( e ));
-   this.position_ui.addEventListener( 'change', e => this.onPositionChange( e ));
+   this.salary_ui  .addEventListener( 'input' , e => this.update());
+   this.position_ui.addEventListener( 'change', e => this.update());
+   window          .addEventListener( 'resize', e => this.update());
 }
 
 adespc_tdms_merignac.prototype.update = function( e ) {
+   const area      = document.getElementById("graph").getBoundingClientRect();
+   this.line_2000  = area.bottom - 118.0;
+   this.line_scale = ( area.height - 170.0 ) / ( 14_000.0 - 2_000.0 );
+   this.left_mask_ui .style.top = ( area.top + 54 ) + "px";
+   this.right_mask_ui.style.top = ( area.top + 54 ) + "px";
    const position = this.position_ui.value;
    let value = parseFloat( this.salary_ui.value );
    if( value > 1_999.99 && value < 14_000.01 ) {
@@ -45,14 +44,6 @@ adespc_tdms_merignac.prototype.update = function( e ) {
    this.right_mask_ui.style.display = ( position == "H16" )? "none" : "block";
    this.right_mask_ui.style.left    = ( 118+(ndx+1)*column_width) + "px";
    this.right_mask_ui.style.width   = (1015-ndx*column_width) + "px";
-}
-
-adespc_tdms_merignac.prototype.onSalaryChange = function( e ) {
-   this.update();
-}
-
-adespc_tdms_merignac.prototype.onPositionChange = function( e ) {
-   this.update();
 }
 
 new adespc_tdms_merignac();
