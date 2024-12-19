@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="ISO-8859-1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=0.50">
+    <title>Analyse des écarts salariaux par catégorie - TDMS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI bold', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        label, input {
+            margin: 5px;
+            padding: 5px;
+        }
+        .container {
+            width: 100%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #00ff00; /* Fond vert */
+            color: #0000ff; /* Police de caractère bleue */
+            padding-top: 30px;
+            min-height: 70px;
+            border-top: #77aaff 3px solid;
+        }
+        header a {
+            color: #0000ff; /* Police de caractère bleue pour les liens */
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        nav {
+            float: right;
+            margin-top: 10px;
+        }
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        nav ul li {
+            display: inline;
+            margin-left: 5px;
+        }
+        .content {
+            padding: 2px;
+            background: #fff;
+        }
+        .image-container {
+            position: relative;
+            display: inline-block;
+        }
+        .line {
+            position: absolute;
+            width: 86%;
+            height: 3px;
+            margin-left: 76px;
+            background-color: red;
+            top: 462px; /* bas 486 Haut 12 px */
+            transition: top 0.5s;
+        }
+		.text {
+            position: absolute;
+            margin-left: 495px;
+            top: 353px;
+            transition: top 0.5s;
+            color: black;
+			font-weight: bold;
+        }
+        .rectangle {
+            position: absolute;
+            border: 3px dashed; /* Bordure en pointillé et transparente */
+			color: red;
+            top: 23px; /* Position verticale */
+            left: 77px; /* Position horizontale */
+            width: 44px; /* Largeur */
+            height: 438px; /* Hauteur */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="input-container">
+                <input type="number" id="heightInput" placeholder="Salaire brut mensuel(€)">
+                <label for="position">position NCCM:</label>
+                <select id="position">
+                    <option value="H16">H16</option>
+                    <option value="H15">H15</option>
+                    <option value="G14">G14</option>
+                    <option value="G13">G13</option>
+                    <option value="F11">F11</option>
+                    <option value="F12">F12</option>
+                    <option value="E10">E10</option>
+                    <option value="E9">E9</option>
+                    <option value="D8">D8</option>
+                    <option value="D7">D7</option>
+                    <option value="C6">C6</option>
+					<option value="C5">C5</option>
+					<option value="B4">B4</option>
+                </select>
+                <label for="site">Site:</label>
+                <select id="site">
+                    <option value="DMS">DMS</option>
+                    <option value="BORDEAUX">BORDEAUX</option>                   
+					<option value="BREST">BREST</option>
+                    <option value="SOPHIA">SOPHIA</option>
+                    <option value="ETRELLES">ETRELLES</option>
+                    <option value="GEMENOS">GEMENOS</option>
+                </select>
+            </div>
+            <div class="image-container">
+                <img src="https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_DMS.png" id="graph" />
+                <div class="line" id="line"></div>
+                <div class="text" id="text"></div>
+                <div class="rectangle" id="rectangle"></div> 
+            </div>
+        </div>
+    </div>
+    <p>&nbsp;&nbsp;N'hésitez pas à nous remonter vos remarques et questions. Adresse email:<a href="mailto:CGT-DMS-Merignac@fr.thalesgroup.com">CGT-DMS-Merignac</a></p>
+	<p>&nbsp;&nbsp;Nous vous assurons de la confidentialité de nos échanges.</p>
+    <script>
+        const scaleFactor = (462.0 - 23.0) / (14000.0 - 2000.0);  // Facteur d'échelle défini dans le code
+        function updateLinePosition() {
+            var value_ui = document.getElementById('heightInput').value;
+            var position = document.getElementById('position').value;
+            var line = document.getElementById('line');
+            var text = document.getElementById('text');
+            text.textContent = "";
+            let value = parseFloat(value_ui);
+            if (value > 1999.99 && value < 14000.01) {
+                if (position.substring(0, 1) < 'F') {
+                    if (value < 2450.00) {
+                        var pa = 2450.00 / 12.0;
+                        value += 2450.00 / 12.0;
+                    } else {
+                        pa = value / 12.0;
+                        value *= 13.00 / 12.00;
+						if (value > 14000.01) {
+						value = 14000.0
+						pa = 0;
+						}
+                    }
+					 text.textContent = "y.c. 13i\u00e8me mois = " + pa.toFixed(0) + " \u20ac";
+                }
+            } else {
+                value = 2000.0;
+            }
+            const y = 462.0 - scaleFactor * (value - 2000.0);
+            line.style.top = y + 'px';
+            text.style.top = (y - 19.0) + 'px';
+			rectangle.style.left = (75.0  + ( parseFloat(position.substring(1, 3)) - 4) * 48.0) + 'px' ;
+			/* rectangle.style.left = (69.0  + ( parseFloat(position.substring(1, 3)) - 4) * 47.0) + 'px' ; */
+
+        }
+        function updateSite() {
+            var site = document.getElementById('site').value;
+            var image = document.getElementById("graph");
+            if (site === "DMS") {
+                image.src = "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_DMS.png";
+            } else if (site === "BORDEAUX") {
+                image.src = "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_BDX.png";
+		    } else if (site === "BREST") {
+                image.src = "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_BREST.png";
+            } else if (site === "SOPHIA") {
+                image.src = "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_SOPHIA.png";
+            } else if (site === "GEMENOS") {
+	            image.src = "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_GEMENOS.png";
+            } else if (site === "ETRELLES") {
+	            image.src = "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_ETRELLES.png";
+		    }	else{
+                image.src = "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_DMS.png";
+            }
+        }
+		rectangle.style.left = (75.0  + ( 16 - 4) * 48.0) + 'px' ;
+        document.getElementById('heightInput').addEventListener('input', updateLinePosition);
+        document.getElementById('position').addEventListener('input', updateLinePosition);
+        document.getElementById('site').addEventListener('input', updateSite);
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<style>
+   .adespc-container label,
+   .adespc-container input {
+      margin: 5px;
+      padding: 5px;
+   }
+   .adespc-container {
+      width: 100%;
+      margin: auto;
+      overflow: hidden;
+   }
+   .adespc-content {
+      padding: 2px;
+      background: #fff;
+   }
+   .adespc-image {
+      position: relative;
+      display: inline-block;
+   }
+   .adespc-line {
+      position: absolute;
+      width: 86%;
+      height: 3px;
+      margin-left: 76px;
+      background-color: red;
+      top: 462px; /* bas 486 Haut 12 px */
+      transition: top 0.5s;
+   }
+   .adespc-text {
+      position: absolute;
+      margin-left: 495px;
+      top: 353px;
+      transition: top 0.5s;
+      color: black;
+      font-weight: bold;
+   }
+   .adespc-rectangle {
+      position: absolute;
+      border: 3px dashed; /* Bordure en pointillé et transparente */
+      color: red;
+      top: 23px; /* Position verticale */
+      left: 77px; /* Position horizontale */
+      width: 44px; /* Largeur */
+      height: 438px; /* Hauteur */
+   }
+</style>
+<div class="adespc-container">
+   <div class="adespc-content">
+      <div class="input-container">
+            <input type="number" id="adespc-salary" placeholder="Salaire brut mensuel(€)">
+            <label for="adespc-position">Position NCCM:</label>
+            <select id="adespc-position">
+               <option value="H16">H16</option>
+               <option value="H15">H15</option>
+               <option value="G14">G14</option>
+               <option value="G13">G13</option>
+               <option value="F11">F11</option>
+               <option value="F12">F12</option>
+               <option value="E10">E10</option>
+               <option value="E9">E9</option>
+               <option value="D8">D8</option>
+               <option value="D7">D7</option>
+               <option value="C6">C6</option>
+         <option value="C5">C5</option>
+         <option value="B4">B4</option>
+            </select>
+            <label for="adespc-site">Site:</label>
+            <select id="adespc-site">
+               <option value="DMS">DMS</option>
+               <option value="BORDEAUX">BORDEAUX</option>                   
+               <option value="BREST">BREST</option>
+               <option value="SOPHIA">SOPHIA</option>
+               <option value="ETRELLES">ETRELLES</option>
+               <option value="GEMENOS">GEMENOS</option>
+            </select>
+      </div>
+      <div class="adespc-image">
+         <img src="https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_DMS.png"
+                                       id="adespc-graph"/>
+         <div class="adespc-line"      id="adespc-line"></div>
+         <div class="adespc-text"      id="adespc-text"></div>
+         <div class="adespc-rectangle" id="adespc-rectangle"></div> 
+      </div>
+   </div>
+</div>
+<p>&nbsp;&nbsp;N'hésitez pas à nous remonter vos remarques et questions. Adresse email:<a href="mailto:CGT-DMS-Merignac@fr.thalesgroup.com">CGT-DMS-Merignac</a></p>
+<p>&nbsp;&nbsp;Nous vous assurons de la confidentialité de nos échanges.</p>
+<script>
+   function updateLinePosition() {
+      adespc_text.textContent = "";
+      const position = adespc_position.value;
+      let value = parseFloat( adespc_salary.value );
+      if( value > 1_999.99 && value < 14_000.01 ) {
+         let pa = 0;
+         if( position.substring( 0, 1 ) < 'F' ) {
+            if( value < 2_450.00 ) {
+               pa     = 2_450.00 / 12.0;
+               value += 2_450.00 / 12.0;
+            }
+            else {
+               pa     = value / 12.0;
+               value *= 13.00 / 12.00;
+               if( value > 14_000.01 ) {
+                  value = 14_000.0
+                  pa    = 0;
+               }
+            }
+            adespc_text.textContent = "y.c. 13i\u00e8me mois = " + pa.toFixed(0) + " \u20ac";
+         }
+      }
+      else {
+         value = 2_000.0;
+      }
+      const y = 462.0 - adespc_scaleFactor * (value - 2_000.0);
+      line.style.top = y + 'px';
+      text.style.top = ( y - 19.0 ) + 'px';
+      rectangle.style.left = ( 75.0  + ( parseFloat( position.substring( 1, 3 )) - 4 ) * 48.0 ) + 'px' ;
+   }
+
+   function updateSite() {
+      const src = adespc_graph_sources[adespc_site.value];
+      adespc_graph.src = src ? src : "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_DMS.png";
+      updateLinePosition();
+   }
+
+   const adespc_scaleFactor   = (462.0 - 23.0) / (14000.0 - 2000.0);  // Facteur d'échelle défini dans le code
+   const adespc_salary        = document.getElementById('adespc-salary');
+   const adespc_position      = document.getElementById('adespc-position');
+   const adespc_site          = document.getElementById('adespc-site');
+   const adespc_image         = document.getElementById('adespc-graph');
+   const adespc_line          = document.getElementById('adespc-line');
+   const adespc_text          = document.getElementById('adespc-text');
+   const adespc_rectangle     = document.getElementById('adespc-rectangle');
+   const adespc_graph_sources = {
+      "DMS"     : "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_DMS.png",
+      "BORDEAUX": "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_BDX.png",
+      "BREST"   : "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_BREST.png",
+      "SOPHIA"  : "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_SOPHIA.png",
+      "GEMENOS" : "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_GEMENOS.png",
+      "ETRELLES": "https://dms.cgtthales.fr/wp-content/uploads/sites/20/2024/12/Graph_salaires_ETRELLES.png"
+   };
+   adespc_rectangle.style.left = ( 75.0  + ( 16 - 4 ) * 48.0 ) + 'px';
+   adespc_salary  .addEventListener( 'input', updateLinePosition );
+   adespc_position.addEventListener( 'input', updateLinePosition );
+   adespc_site    .addEventListener( 'input', updateSite );
+</script>
